@@ -22,3 +22,9 @@
 
 ## 遗留提醒
 若日后在 LuCI 重新启用 config_subscribe[1] 并点更新订阅，源文件会被上游故障转移模板重新覆盖：兜底组靠覆写脚本仍会自动回来，但 ⭐自定义与 Custom_User 会丢，需要按 deploy-123.yaml 重新合并。
+
+## 订阅转换模板（GitHub 链接版，2026-11-11 新增）
+基于 Aethersailor「重度分流版」原版 ini 二次定制：上游 63 条 ruleset / 63 个分组逐条保留，仅新增 `⭐ 自定义` 组和 1 条自定义 ruleset（指向本仓库 `rule/Custom_User_Classical.yaml`，在 GitHub 改名单即生效）；ruleset 总数 64，仍在转换后端 max_allowed_rulesets=64 上限内。
+- 故障转移版（现用）：https://raw.githubusercontent.com/duoluo1234/clash/main/Custom_Clash_Full_Fallback_Custom.ini
+- 手动选择版：https://raw.githubusercontent.com/duoluo1234/clash/main/Custom_Clash_Full_Custom.ini
+用法：订阅转换时把 config 参数换成上面的链接即可（OpenClash 订阅转换的自定义模板同理）。

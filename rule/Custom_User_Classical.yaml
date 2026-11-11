@@ -1,0 +1,9 @@
+# 自定义规则名单 (classical) — 命中后走 ⭐ 自定义 组
+# 在 GitHub 上直接编辑这个文件即可, 模板不用动; 每行一条、不要写目标组
+# 例:
+# payload:
+#   - DOMAIN-SUFFIX,example.com
+#   - DOMAIN,www.example.org
+#   - DOMAIN-KEYWORD,tracker
+#   - IP-CIDR,203.0.113.0/24,no-resolve
+payload: []
