@@ -28,3 +28,4 @@
 - 故障转移版（现用）：https://raw.githubusercontent.com/duoluo1234/clash/main/Custom_Clash_Full_Fallback_Custom.ini
 - 手动选择版：https://raw.githubusercontent.com/duoluo1234/clash/main/Custom_Clash_Full_Custom.ini
 用法：订阅转换时把 config 参数换成上面的链接即可（OpenClash 订阅转换的自定义模板同理）。
+2026-11-11 瘦身：jin 订阅实际只有港/美/日/新/台有节点，已删除 8 个空国家组（韩/加/英/法/德/荷/土/俄）的定义与全部成员引用——空组在 fallback 链里报存活、可能抢在自动选择之前把流量直连放出；分组 64→56。同步适用于 .2 现行原生模板（mihomo-template.yaml，70→62 组）与 .2 已部署源配置（备份 .bak-slim-20261111，重启验收：62 组/90 规则、⭐ 自定义在、韩国组 404、gstatic 204/chatgpt 200/baidu 200）。
