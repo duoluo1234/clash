@@ -1,0 +1,5 @@
+# 自定义 classical 规则, 例:
+# payload:
+#   - DOMAIN-SUFFIX,example.com,⭐ 自定义
+#   - IP-CIDR,1.2.3.0/24,🎯 全球直连,no-resolve
+payload: []

@@ -1,0 +1,1341 @@
+# ============================================================
+# 自建模板 (mihomo/OpenClash) — 2026-11-11 部署版
+# 基准: 当日现行源配置 (Aethersailor 故障转移版, 63组/63规则) 逐项对齐
+# 本版: 70组 (63 + 美国UI + 5兜底 + ⭐自定义) / 65规则 (63 + 2自定义) / 8 rule-providers (6 + 2本地自定义)
+# 自定义只改: ⭐自定义组 / Custom_User_Domain / Custom_User_Classical (文件在 /etc/openclash/rule_provider/)
+# 节点订阅只作 proxy-providers, 每小时只换节点; 本文件已取代整份配置订阅 (config_subscribe[1] 已禁用)
+# ============================================================
+port: 7890
+socks-port: 7891
+allow-lan: true
+mode: rule
+log-level: info
+external-controller: 127.0.0.1:9090
+proxy-providers:
+  Provider_72D900:
+    type: http
+    url: REPLACE_WITH_YOUR_NODE_SUBSCRIPTION_URL
+    interval: 3600
+    path: ./providers/Provider_72D900.yaml
+    header:
+      User-Agent:
+      - clash.meta/1.19.20
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    override:
+      skip-cert-verify: true
+      udp: true
+proxy-groups:
+- name: 🚀 故障转移
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: ⭐ 自定义
+  type: select
+  proxies:
+  - 🚀 故障转移
+  - ♻️ 自动选择
+  - 🎯 全球直连
+- name: ♻️ 自动选择
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: .*
+- name: 🇺🇸 美国UI
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 120
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: ^美国ui$
+- name: 🛟 兜底·新加坡
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 120
+  proxies:
+  - 🇸🇬 新加坡节点
+  - 🇭🇰 香港节点
+  - 🇯🇵 日本节点
+  - ♻️ 自动选择
+- name: 🛟 兜底·美国
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 120
+  proxies:
+  - 🇺🇸 美国UI
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - ♻️ 自动选择
+- name: 🛟 兜底·香港
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 120
+  proxies:
+  - 🇭🇰 香港节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - ♻️ 自动选择
+- name: 🛟 兜底·台湾
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 120
+  proxies:
+  - 🇼🇸 台湾节点
+  - 🇭🇰 香港节点
+  - 🇯🇵 日本节点
+  - ♻️ 自动选择
+- name: 🛟 兜底·日本
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 120
+  proxies:
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇸🇬 新加坡节点
+  - ♻️ 自动选择
+- name: 📨 Telegram
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·香港
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🎧 Discord
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 📞 Talkatone
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 📹 Zoom
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+  - 🎯 全球直连
+- name: 💬 即时通讯
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🌐 社交媒体
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🚀 GitHub
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·日本
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+  - 🎯 全球直连
+- name: 📦 容器服务
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+  - 🎯 全球直连
+- name: 💻 开发者服务
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+  - 🎯 全球直连
+- name: 📚 学术资源
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+  - 🎯 全球直连
+- name: 🤖 ChatGPT
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·美国
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🤖 Copilot
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·美国
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🤖 Claude
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·美国
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🤖 Gemini
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·美国
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🤖 Grok
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·美国
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🤖 国外AI服务
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·美国
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🤖 国内AI服务
+  type: select
+  proxies:
+  - 🎯 全球直连
+  - 🚀 故障转移
+  - ♻️ 自动选择
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+- name: 🎶 TikTok
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·台湾
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 📹 YouTube
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·日本
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🎥 Netflix
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🎥 DisneyPlus
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🎥 HBO
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🎥 PrimeVideo
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🎥 AppleTV+
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·新加坡
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🎥 Emby
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🎻 Spotify
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇸🇬 新加坡节点
+  - 🇯🇵 日本节点
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 📺 Bahamut
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·台湾
+  - 🇼🇸 台湾节点
+  - 🇭🇰 香港节点
+  - 🚀 故障转移
+  - 🎯 全球直连
+- name: 🌎 国外媒体
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·台湾
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 📰 新闻资讯
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🛒 国外电商
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🪙 加密货币
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 📢 谷歌FCM
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·日本
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+  - 🎯 全球直连
+- name: 🇬 谷歌服务
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·日本
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🍎 苹果服务
+  type: select
+  proxies:
+  - 🎯 全球直连
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: Ⓜ️ 微软服务
+  type: select
+  proxies:
+  - 🎯 全球直连
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 💾 OneDrive
+  type: select
+  proxies:
+  - 🎯 全球直连
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 💳 PayPal
+  type: select
+  proxies:
+  - 🎯 全球直连
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🎮 游戏平台
+  type: select
+  proxies:
+  - 🛟 兜底·香港
+  - 🎯 全球直连
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🎮 Steam
+  type: select
+  proxies:
+  - 🛟 兜底·香港
+  - 🎯 全球直连
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: ⏬ PT站点
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+  - 🎯 全球直连
+- name: 🚀 测速工具
+  type: select
+  proxies:
+  - 🛟 兜底·日本
+  - 🎯 全球直连
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🌍 国外域名
+  type: select
+  proxies:
+  - 🛟 兜底·日本
+  - 🎯 全球直连
+  - 🚀 故障转移
+  - ♻️ 自动选择
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+- name: 🐟 漏网之鱼
+  type: fallback
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  proxies:
+  - 🛟 兜底·日本
+  - 🇭🇰 香港节点
+  - 🇺🇸 美国节点
+  - 🇯🇵 日本节点
+  - 🇸🇬 新加坡节点
+  - 🇼🇸 台湾节点
+  - 🇰🇷 韩国节点
+  - 🇨🇦 加拿大节点
+  - 🇬🇧 英国节点
+  - 🇫🇷 法国节点
+  - 🇩🇪 德国节点
+  - 🇳🇱 荷兰节点
+  - 🇹🇷 土耳其节点
+  - 🇷🇺 俄罗斯节点
+  - 🌐 其他地区
+  - 🏠 家宽节点
+  - 🐢 低倍率节点
+  - ♻️ 自动选择
+- name: 🔀 非标端口
+  type: select
+  proxies:
+  - 🐟 漏网之鱼
+  - 🎯 全球直连
+- name: 🇭🇰 香港节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇭🇰|港|\bHK(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|hk|Hong Kong|Hongkong|Hong kong|HongKong|hongkong|HONG KONG|HONGKONG|深港|HKG|九龙|Kowloon|新界|沙田|荃湾|葵涌)
+- name: 🇺🇸 美国节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇺🇸|美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|纽约|纽纽|亚特兰大|迈阿密|华盛顿|\bUS(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|United States|UnitedStates|UNITED STATES|USA|America|AMERICA|JFK|EWR|IAD|ATL|ORD|MIA|NYC|LAX|SFO|SEA|DFW|SJC)
+- name: 🇯🇵 日本节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇯🇵|日本|川日|东京|大阪|泉日|埼玉|沪日|深日|(?<!尼|-)日|\bJP(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|Japan|JAPAN|JPN|NRT|HND|KIX|TYO|OSA|关西|Kansai|KANSAI)
+- name: 🇸🇬 新加坡节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇸🇬|新加坡|坡|狮城|\bSG(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|Singapore|SINGAPORE|SIN)
+- name: 🇼🇸 台湾节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇹🇼|🇼🇸|台|新北|彰化|\bTW(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|Taiwan|TAIWAN|TWN|TPE|ROC)
+- name: 🇰🇷 韩国节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇰🇷|\bKR(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|Korea|KOREA|KOR|首尔|韩|韓|春川|Chuncheon|ICN)
+- name: 🇨🇦 加拿大节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇨🇦|加拿大|\bCA(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|Canada|CANADA|CAN|渥太华|温哥华|卡尔加里|蒙特利尔|Montreal|YVR|YYZ|YUL)
+- name: 🇬🇧 英国节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇬🇧|英国|Britain|United Kingdom|UNITED KINGDOM|England|伦敦|曼彻斯特|Manchester|\bUK(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|GBR|LHR|MAN)
+- name: 🇫🇷 法国节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇫🇷|法国|\bFR(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|France|FRANCE|FRA|巴黎|马赛|Marseille|CDG|MRS)
+- name: 🇩🇪 德国节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇩🇪|德国|Germany|GERMANY|\bDE(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|DEU|柏林|法兰克福|慕尼黑|Munich|MUC)
+- name: 🇳🇱 荷兰节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇳🇱|荷兰|Netherlands|NETHERLANDS|\bNL(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|NLD|阿姆斯特丹|AMS)
+- name: 🇹🇷 土耳其节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇹🇷|土耳其|Turkey|TURKEY|Türkiye|\bTR(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|TUR|IST|ANK)
+- name: 🇷🇺 俄罗斯节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (🇷🇺|(?<!白)俄罗斯|(?<!白)俄|莫斯科|圣彼得堡|新西伯利亚|海参崴|符拉迪沃斯托克|哈巴罗夫斯克|伯力|\bRU(?:[-_ ]?\d+)?\b|Russia)
+- name: 🌐 其他地区
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (^(?!.*(港|\bHK(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|hk|Hong Kong|Hongkong|Hong kong|HongKong|hongkong|HONG KONG|HONGKONG|深港|HKG|🇭🇰|九龙|Kowloon|新界|沙田|荃湾|葵涌|美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|纽约|纽纽|亚特兰大|迈阿密|华盛顿|\bUS(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|United States|UnitedStates|UNITED STATES|USA|America|AMERICA|JFK|EWR|IAD|ATL|ORD|MIA|NYC|LAX|SFO|SEA|DFW|SJC|🇺🇸|日本|川日|东京|大阪|泉日|埼玉|沪日|深日|(?<!尼|-)日|\bJP(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|Japan|JAPAN|JPN|NRT|HND|KIX|TYO|OSA|🇯🇵|关西|Kansai|KANSAI|新加坡|坡|狮城|\bSG(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|Singapore|SINGAPORE|SIN|🇸🇬|台|新北|彰化|\bTW(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|Taiwan|TAIWAN|TWN|TPE|ROC|🇹🇼|\bKR(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|Korea|KOREA|KOR|首尔|韩|韓|春川|Chuncheon|ICN|🇰🇷|加拿大|\bCA(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|Canada|CANADA|CAN|渥太华|温哥华|卡尔加里|蒙特利尔|Montreal|YVR|YYZ|YUL|🇨🇦|英国|Britain|United Kingdom|UNITED KINGDOM|England|伦敦|曼彻斯特|Manchester|\bUK(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|GBR|LHR|MAN|🇬🇧|法国|\bFR(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|France|FRANCE|FRA|巴黎|马赛|Marseille|CDG|MRS|🇫🇷|德国|Germany|GERMANY|\bDE(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|DEU|柏林|法兰克福|慕尼黑|Munich|MUC|🇩🇪|荷兰|Netherlands|NETHERLANDS|\bNL(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|NLD|阿姆斯特丹|AMS|🇳🇱|土耳其|Turkey|TURKEY|Türkiye|\bTR(?:[-_ ]?\d+(?:[-_ ]?[A-Za-z]{2,})?)?\b|TUR|IST|ANK|🇹🇷|🇷🇺|(?<!白)俄罗斯|(?<!白)俄|莫斯科|圣彼得堡|新西伯利亚|海参崴|符拉迪沃斯托克|哈巴罗夫斯克|伯力|\bRU(?:[-_ ]?\d+)?\b|Russia|家宽|家庭宽带|住宅|Residential|低倍率|低倍|(?<![\d\.])0?\.\d+(?![0-9])(?:x|倍)?|倍率[:： ]?0?\.\d+)).*)
+- name: 🏠 家宽节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (家宽|家庭宽带|住宅|Residential)
+- name: 🐢 低倍率节点
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - Provider_72D900
+  filter: (低倍率|低倍|(?<![\d\.])0?\.\d+(?![0-9])(?:x|倍)?|倍率[:： ]?0?\.\d+)
+- name: 🎯 全球直连
+  type: select
+  url: https://www.gstatic.com/generate_204
+  proxies:
+  - DIRECT
+rules:
+- GEOSITE,private,🎯 全球直连
+- GEOIP,private,🎯 全球直连,no-resolve
+- RULE-SET,Custom_User_Domain,⭐ 自定义
+- RULE-SET,Custom_User_Classical,⭐ 自定义
+- RULE-SET,Custom_Direct_Domain,🎯 全球直连
+- RULE-SET,Custom_Direct_Classical_IP,🎯 全球直连
+- RULE-SET,Custom_Proxy_Domain,🚀 故障转移
+- RULE-SET,Custom_Proxy_Classical_IP,🚀 故障转移
+- GEOSITE,category-games@cn,🎯 全球直连
+- RULE-SET,Steam_CDN_Classical,🎯 全球直连
+- GEOSITE,category-game-platforms-download,🎯 全球直连
+- GEOSITE,category-public-tracker,🎯 全球直连
+- GEOSITE,zoom,📹 Zoom
+- GEOSITE,talkatone,📞 Talkatone
+- GEOSITE,telegram,📨 Telegram
+- GEOSITE,discord,🎧 Discord
+- GEOSITE,category-communication,💬 即时通讯
+- GEOSITE,xai,🤖 Grok
+- GEOSITE,category-social-media-!cn,🌐 社交媒体
+- GEOSITE,openai,🤖 ChatGPT
+- GEOSITE,onedrive,💾 OneDrive
+- GEOSITE,bing,🤖 Copilot
+- GEOSITE,anthropic,🤖 Claude
+- GEOSITE,google-gemini,🤖 Gemini
+- GEOSITE,category-ai-!cn,🤖 国外AI服务
+- GEOSITE,category-ai-cn,🤖 国内AI服务
+- GEOSITE,docker,📦 容器服务
+- GEOSITE,category-container,📦 容器服务
+- GEOSITE,github,🚀 GitHub
+- GEOSITE,category-dev,💻 开发者服务
+- GEOSITE,category-scholar-!cn,📚 学术资源
+- GEOSITE,category-speedtest,🚀 测速工具
+- GEOSITE,steam,🎮 Steam
+- GEOSITE,youtube,📹 YouTube
+- GEOSITE,apple-tvplus,🎥 AppleTV+
+- GEOSITE,apple,🍎 苹果服务
+- GEOSITE,microsoft,Ⓜ️ 微软服务
+- GEOSITE,googlefcm,📢 谷歌FCM
+- GEOSITE,google,🇬 谷歌服务
+- GEOSITE,tiktok,🎶 TikTok
+- GEOSITE,netflix,🎥 Netflix
+- GEOSITE,disney,🎥 DisneyPlus
+- GEOSITE,hbo,🎥 HBO
+- GEOSITE,primevideo,🎥 PrimeVideo
+- GEOSITE,category-emby,🎥 Emby
+- GEOSITE,spotify,🎻 Spotify
+- GEOSITE,bahamut,📺 Bahamut
+- GEOSITE,category-games,🎮 游戏平台
+- GEOSITE,category-media,📰 新闻资讯
+- GEOSITE,category-entertainment,🌎 国外媒体
+- GEOSITE,category-pt,⏬ PT站点
+- GEOSITE,paypal,💳 PayPal
+- GEOSITE,category-ecommerce,🛒 国外电商
+- GEOSITE,category-cryptocurrency,🪙 加密货币
+- GEOSITE,gfw,🚀 故障转移
+- GEOIP,telegram,📨 Telegram,no-resolve
+- GEOIP,twitter,🌐 社交媒体,no-resolve
+- GEOIP,facebook,🌐 社交媒体,no-resolve
+- GEOIP,google,🇬 谷歌服务,no-resolve
+- GEOIP,netflix,🎥 Netflix,no-resolve
+- GEOSITE,geolocation-!cn,🌍 国外域名
+- GEOSITE,cn,🎯 全球直连
+- GEOIP,cn,🎯 全球直连,no-resolve
+- RULE-SET,Custom_Port_Direct,🔀 非标端口
+- MATCH,🐟 漏网之鱼
+rule-providers:
+  Custom_Direct_Domain:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Aethersailor/Custom_OpenClash_Rules@main/rule/Custom_Direct_Domain.mrs
+    path: ./providers/Custom_Direct_Domain-domain-4fdb72739bdef828.mrs
+    format: mrs
+    interval: 1800
+  Custom_Direct_Classical_IP:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/Aethersailor/Custom_OpenClash_Rules@main/rule/Custom_Direct_Classical_IP.yaml
+    path: ./providers/Custom_Direct_Classical_IP-classical-e575c22bb6757ba6.yaml
+    format: yaml
+    interval: 28800
+  Custom_Proxy_Domain:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Aethersailor/Custom_OpenClash_Rules@main/rule/Custom_Proxy_Domain.mrs
+    path: ./providers/Custom_Proxy_Domain-domain-4d5582aaafee9813.mrs
+    format: mrs
+    interval: 28800
+  Custom_Proxy_Classical_IP:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/Aethersailor/Custom_OpenClash_Rules@main/rule/Custom_Proxy_Classical_IP.yaml
+    path: ./providers/Custom_Proxy_Classical_IP-classical-9f6f6a3a99bce097.yaml
+    format: yaml
+    interval: 28800
+  Steam_CDN_Classical:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/Aethersailor/Custom_OpenClash_Rules@main/rule/Steam_CDN_Classical.yaml
+    path: ./providers/Steam_CDN_Classical-classical-29ff7646a2af8d23.yaml
+    format: yaml
+    interval: 28800
+  Custom_Port_Direct:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/Aethersailor/Custom_OpenClash_Rules@main/rule/Custom_Port_Direct.yaml
+    path: ./providers/Custom_Port_Direct-classical-433a1924903bd0fe.yaml
+    format: yaml
+    interval: 28800
+  Custom_User_Domain:
+    type: file
+    behavior: domain
+    path: ./rule_provider/Custom_User_Domain.yaml
+    format: yaml
+  Custom_User_Classical:
+    type: file
+    behavior: classical
+    path: ./rule_provider/Custom_User_Classical.yaml
+    format: yaml

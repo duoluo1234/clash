@@ -1,0 +1,24 @@
+# 自建订阅模板（已部署到 .2，2026-11-11）
+
+## 现行基准（部署前实测，已纠正）
+现行源配置是 subconverter 模板「Aethersailor 规则 重度分流版 **故障转移**」生成的版本（UCI config_subscribe[1]，当日 15:31 刚重新生成）：63 组（35 fallback / 17 url-test / 11 select，主组为 `🚀 故障转移`，**没有** 🚀手动选择）、63 条 rules（其中 3 条指向故障转移）、6 个远程 rule-providers。
+注意：`~/workspace/fallback-fix/` 里 2026-11-10 的备份件是另一个模板变体「Custom_Clash_Full」（select 版），与现行不是同一套，不要混用（旧草稿已存为 `mihomo-template-select-variant.bak.yaml`）。
+
+## 部署结果（2026-11-11 15:46 验收通过）
+- 部署版 = 现行源配置逐项对齐 + 内置注入：`🇺🇸 美国UI` + 5 个 `🛟 兜底·*`（原本靠覆写脚本运行时注入，现写进源文件；覆写脚本保留、幂等不重复）+ `⭐ 自定义` 组 + 2 条 Custom_User 规则 + 2 个本地 file 型 rule-providers。
+- 落点：直接替换 `/etc/openclash/config/123.yaml`（config_path 不变），并把 `config_subscribe[1].enabled` 置 0（LuCI 可见可改；该订阅原本 auto_update=0，只有点更新才会覆盖）。节点 provider 每小时刷新不受影响。
+- 运行配置验收：70 组（= 部署前 69 组 + ⭐自定义，无重复）、90 条 rules（88 + 2 自定义）、providers 含 Custom_User 两个；API 实测 ⭐自定义 alive、now=🚀故障转移；经 7890：gstatic/google 204、chatgpt 200、netflix 302、baidu 直连 200；DNS：google 回 fake A 198.18.2.182 + fake AAAA 2001:2::62a，baidu 回真实国内地址。
+
+## 文件
+- `mihomo-template.yaml` —  canonical 模板（节点 URL 为占位符）。
+- `live-20261111/deploy-123.yaml` — 已部署原件（含真实节点订阅地址，勿外传）；同目录另有部署前源/运行配置快照与部署后运行配置。
+- `rule_provider/Custom_User_Domain.yaml` / `Custom_User_Classical.yaml` — 自定义规则（.2 上在 `/etc/openclash/rule_provider/`），空 payload 起步。
+
+## 自定义怎么改
+往两个 Custom_User 文件的 payload 里加域名/classical 规则即可，目标组默认 `⭐ 自定义`（select，现指向 🚀故障转移，可在 API/LuCI 改选 自动选择/全球直连）。改完重启 OpenClash 生效。
+
+## 回滚
+.2 上：`config/123.yaml.bak-selftmpl-20261111`（源）、`123.yaml.bak-selftmpl-20261111`（运行）、`/etc/config/openclash.bak-selftmpl-20261111`（UCI，含 subscribe[1] 原 enabled=1）。恢复源文件 + UCI 后重启 OpenClash 即回部署前状态。
+
+## 遗留提醒
+若日后在 LuCI 重新启用 config_subscribe[1] 并点更新订阅，源文件会被上游故障转移模板重新覆盖：兜底组靠覆写脚本仍会自动回来，但 ⭐自定义与 Custom_User 会丢，需要按 deploy-123.yaml 重新合并。
