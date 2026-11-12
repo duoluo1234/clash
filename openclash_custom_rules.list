@@ -1,31 +1,3 @@
 rules:
-  # WebRTC / STUN / TURN 阻断 + 国外 QUIC 阻断 (jin 2026-11-12 提供; 经 OpenClash 自定义规则置于规则表最前; 📹 WebRTC 分组已于同日按 jin 要求删除, 21 条恢复直指 REJECT)
-  # Block WebRTC / STUN / TURN
-  - 'DOMAIN-KEYWORD,stunserver,REJECT'
-  - 'DOMAIN-KEYWORD,turnserver,REJECT'
-  - 'DOMAIN-REGEX,(^|\.)stun[0-9]*[.-],REJECT'
-  - 'DOMAIN-REGEX,(^|\.)turn[0-9]*[.-],REJECT'
-  # Metered / OpenRelay
-  - 'DOMAIN-SUFFIX,openrelay.metered.ca,REJECT'
-  - 'DOMAIN-SUFFIX,relay.metered.ca,REJECT'
-  - 'DOMAIN-SUFFIX,meteredstun.ca,REJECT'
-  # Known STUN / TURN endpoints
-  - 'DOMAIN-SUFFIX,stunprotocol.org,REJECT'
-  - 'DOMAIN-SUFFIX,freestun.net,REJECT'
-  - 'DOMAIN,s1.taraba.net,REJECT'
-  - 'DOMAIN,s2.taraba.net,REJECT'
-  - 'DOMAIN,numb.viagenie.ca,REJECT'
-  - 'DOMAIN,iphone-stun.strato-iphone.de,REJECT'
-  - 'DOMAIN,relay.webwormhole.io,REJECT'
-  - 'DOMAIN,meet-jit-si-turnrelay.jitsi.net,REJECT'
-  # Standard STUN / TURN ports
-  - 'DST-PORT,3478,REJECT'
-  - 'DST-PORT,5349,REJECT'
-  # Common WebRTC media / Google STUN ports
-  - 'AND,((NETWORK,UDP),(DST-PORT,19302-19309)),REJECT'
-  - 'AND,((NETWORK,UDP),(DST-PORT,10000)),REJECT'
-  - 'AND,((NETWORK,UDP),(DST-PORT,5350)),REJECT'
-  # 国内 QUIC 放行，其他 UDP/443 拒绝
-  - 'AND,((GEOSITE,cn),(NETWORK,UDP),(DST-PORT,443)),DIRECT'
-  - 'AND,((GEOIP,CN,no-resolve),(NETWORK,UDP),(DST-PORT,443)),DIRECT'
-  - 'AND,((NETWORK,UDP),(DST-PORT,443)),REJECT'
+  # (empty) WebRTC/STUN/TURN + QUIC rules removed 2026-11-12 at jin's request.
+  # Previous 23-rule set is preserved in git history (commit 21e97109) and locally as .bak-20261112.
